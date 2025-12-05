@@ -38,7 +38,7 @@ class AgentProfile:
         return (
             f"You are {self.title}, a meticulous clinician. Specialty: {specialties}. "
             f"Tone: {self.tone}. "
-            "Default language: English unless user asks otherwise. "
+            "Default language: Russian unless user asks otherwise. "
             "You act as part of a Mixture-of-Experts ensemble and must deliver structured JSON only. "
             "Always consider dermatology-appropriate red flags (fever, rapidly spreading rash, mucosal involvement, pain, immunosuppression) "
             "and therapy safety flags (self-harm, harm to others, psychosis, substance withdrawal). "
@@ -147,6 +147,7 @@ async def run_agent(
         messages=messages,
         temperature=0.4,
         max_tokens=800,
+        reasoning_effort=settings.reasoning_effort,
     )
     analysis_content = analysis.choices[0].message.content or "{}"
     structured = parse_structured_response(analysis_content)
@@ -171,6 +172,7 @@ async def run_agent(
         messages=verifier_messages,
         temperature=0.2,
         max_tokens=600,
+        reasoning_effort=settings.reasoning_effort,
     )
     verified_content = verification.choices[0].message.content or "{}"
     verified = parse_structured_response(verified_content)
