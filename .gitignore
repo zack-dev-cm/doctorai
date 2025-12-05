@@ -1,14 +1,59 @@
+# Environment and secrets
 .env
+.env.*
+*.env
+.envrc
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+*.csr
+id_rsa
+id_rsa.pub
+
+# Python artifacts
 __pycache__/
 .pytest_cache/
+.mypy_cache/
 .ruff_cache/
-*.pyc
-*.pyo
-*.DS_Store
+*.py[cod]
+*.pyd
+.coverage
+coverage/
+htmlcov/
 dist/
 build/
-.venv/
+*.egg-info/
+*.db
+*.sqlite
+*.sqlite3
+
+# Node/JS artifacts
 node_modules/
-test-results/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
 playwright-report/
+test-results/
+.playwright/
+
+# Tooling and editors
+.venv/
+.idea/
+.vscode/
+.DS_Store
+.cache/
+*.swp
+*.swo
+
+# Misc local files
 intro_gemini_3_image_gen.ipynb
+
+# Internal docs (keep local only)
+AGENTS.md

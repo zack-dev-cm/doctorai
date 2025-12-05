@@ -3,201 +3,391 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DoctorAI · Dermatology First</title>
+  <title>DoctorAI · Guided Chat</title>
+  <link rel="icon" type="image/png" href="/assets/doctorai-mini.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b132b;
-      --panel: #111a33;
-      --accent: #5dd0ff;
-      --accent-2: #89f5d0;
-      --text: #e8edf7;
-      --muted: #9fb3d1;
-      --warn: #ffd166;
-      --danger: #ef476f;
-      --radius: 18px;
+      --bg: #0d1b2a;
+      --panel: #111c30;
+      --card: #0f1726;
+      --glass: rgba(255, 255, 255, 0.04);
+      --ink: #e9f0ff;
+      --muted: #9fb2d5;
+      --accent: #4dd4ac;
+      --accent-2: #62a5ff;
+      --danger: #ef8891;
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 16px;
       color-scheme: dark;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, rgba(93,208,255,0.12), transparent 32%), radial-gradient(circle at 80% 0%, rgba(137,245,208,0.16), transparent 40%), var(--bg);
-      color: var(--text);
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(77,212,172,0.10), transparent 32%),
+        radial-gradient(circle at 86% 12%, rgba(98,165,255,0.14), transparent 30%),
+        linear-gradient(145deg, #0a1220, #0e1a2d 40%, #0a1220);
+      color: var(--ink);
       min-height: 100vh;
-      padding: 32px 20px 48px;
+      padding: 28px 20px 40px;
+      line-height: 1.6;
     }
-    h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; }
-    p.lead { margin: 0; color: var(--muted); max-width: 720px; }
-    .shell {
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 20px;
-      margin-top: 28px;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      align-items: start;
     }
-    .card {
-      background: linear-gradient(120deg, rgba(17,26,51,0.96), rgba(17,26,51,0.86));
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 20px 60px rgba(5,12,28,0.45);
-      border-radius: var(--radius);
-      padding: 20px;
-      backdrop-filter: blur(8px);
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+      margin-bottom: 14px;
     }
-    .tagline {
+    .brand {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(93,208,255,0.12);
-      color: var(--accent);
-      font-weight: 600;
-      font-size: 14px;
     }
-    .tagline small { color: var(--muted); font-weight: 500; }
-    label { display: block; margin-top: 12px; font-weight: 600; }
-    input[type="text"], textarea, select {
-      width: 100%;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      color: var(--text);
-      padding: 12px 14px;
-      font-size: 15px;
-      transition: border 0.2s ease, transform 0.15s ease;
-    }
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    textarea { resize: vertical; min-height: 120px; }
-    .agent-toggle {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .agent-btn {
-      border-radius: 14px;
-      padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      cursor: pointer;
-      text-align: left;
-      transition: border 0.2s ease, transform 0.15s ease, background 0.2s ease;
-    }
-    .agent-btn.active {
-      background: linear-gradient(135deg, rgba(93,208,255,0.16), rgba(137,245,208,0.12));
-      border-color: rgba(93,208,255,0.45);
-      transform: translateY(-1px);
-    }
-    .agent-btn span { display: block; color: var(--muted); font-size: 13px; margin-top: 6px; }
-    .upload {
-      margin-top: 14px;
-      border: 1px dashed rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 14px;
-      background: rgba(255,255,255,0.02);
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 14px;
-    }
-    button.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      border: none;
-      color: #051229;
-      font-weight: 700;
-      padding: 12px 16px;
-      border-radius: 14px;
-      cursor: pointer;
-      min-width: 140px;
-      transition: transform 0.15s ease, box-shadow 0.2s ease;
-      box-shadow: 0 10px 30px rgba(93,208,255,0.35);
-    }
-    button.primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-    .status { color: var(--muted); font-size: 14px; }
-    .result { margin-top: 10px; }
+    .brand img { display: block; }
+    .brand-logo { height: 30px; width: auto; }
+    .brand-mini { height: 38px; width: 38px; border-radius: 12px; border: 1px solid var(--border); background: #0c1422; padding: 6px; }
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-weight: 600;
       font-size: 13px;
+      letter-spacing: 0.01em;
+      border: 1px solid var(--border);
     }
-    .grid {
+    .hero {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 18px;
+      box-shadow: 0 22px 40px rgba(0,0,0,0.34);
+      position: sticky;
+      top: 16px;
+    }
+    h1 { font-family: 'Space Grotesk', sans-serif; margin: 8px 0 4px; letter-spacing: -0.01em; }
+    h2 { margin: 0 0 10px; font-family: 'Space Grotesk', sans-serif; }
+    p { margin: 0; color: var(--muted); }
+    .hero-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .note-card {
+      background: linear-gradient(140deg, rgba(77,212,172,0.08), rgba(98,165,255,0.08));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .asset-strip {
+      display: flex;
+      align-items: center;
       gap: 10px;
       margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .asset-strip img {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.28);
+    }
+    .asset-hero { width: 100%; border-radius: 14px; }
+    .asset-small { height: 60px; width: auto; padding: 6px; }
+    .chat-shell {
+      background: var(--panel);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 18px;
+      box-shadow: 0 22px 46px rgba(0,0,0,0.34);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 80vh;
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .agent-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .agent-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .agent-btn.active {
+      background: linear-gradient(135deg, rgba(77,212,172,0.16), rgba(98,165,255,0.16));
+      color: var(--ink);
+    }
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .chat-log {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bubble {
+      padding: 12px 14px;
+      border-radius: 14px;
+      max-width: 96%;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.24);
+    }
+    .bubble.user {
+      margin-left: auto;
+      background: linear-gradient(135deg, rgba(98,165,255,0.18), rgba(77,212,172,0.22));
+      color: #0a1220;
+      font-weight: 600;
+    }
+    .bubble.ai {
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+    }
+    .meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .followups {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--ink);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.2s ease;
+    }
+    .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.08); }
+    .chip.outline { color: var(--muted); }
+    .composer {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink);
+      padding: 12px;
+      font-size: 15px;
+      resize: vertical;
+      min-height: 120px;
+    }
+    textarea:focus { outline: 2px solid rgba(98,165,255,0.35); }
+    .composer-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .file-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .file-pill img { height: 34px; width: 34px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border); display: none; }
+    button.primary {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      border: none;
+      color: #0b1322;
+      font-weight: 800;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      min-width: 150px;
+      transition: transform 0.12s ease, box-shadow 0.22s ease, opacity 0.2s ease;
+      box-shadow: 0 14px 28px rgba(77,212,172,0.25);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    button.primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .summary {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .summary h3 { margin: 0 0 6px; }
+    .summary .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
     }
     .panel {
       background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
+      padding: 10px;
     }
     ul { padding-left: 18px; margin: 6px 0; color: var(--muted); }
-    .confidence { color: var(--accent); font-weight: 700; }
-    .badge-warn { color: var(--warn); }
-    .badge-danger { color: var(--danger); }
-    .image-preview { margin-top: 8px; max-height: 140px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); display: none; }
-    footer { margin-top: 30px; color: var(--muted); font-size: 13px; }
-    @media (max-width: 960px) { .shell { grid-template-columns: 1fr; } }
+    .badge-warn { color: var(--danger); font-weight: 700; }
+    .badge-soft { color: var(--accent); font-weight: 700; }
+    footer { margin-top: 20px; color: var(--muted); font-size: 13px; text-align: center; }
+    @media (max-width: 1080px) { .page { grid-template-columns: 1fr; } .hero { position: static; } }
+    @media (max-width: 640px) {
+      body { padding: 18px 12px 32px; }
+      .composer-actions { flex-direction: column; align-items: stretch; }
+      button.primary { width: 100%; }
+      .chat-log { max-height: 420px; }
+    }
   </style>
 </head>
 <body>
-  <div class="tagline">DoctorAI · Dermatology first <small>with generalist therapist fallback</small></div>
-  <h1>Skin-first medical triage with safe guardrails</h1>
-  <p class="lead">Upload a photo, describe what you see or feel, and the agent will ask for clarifications before giving a conservative, clinician-style plan. Images never leave your session except for model analysis.</p>
-
-  <div class="shell">
-    <section class="card">
-      <label>Choose agent</label>
-      <div class="agent-toggle" id="agentToggle">
-        <button class="agent-btn active" data-agent="dermatologist">
-          Dermatologist
-          <span>Default. Focus on lesions, rashes, healing.</span>
-        </button>
-        <button class="agent-btn" data-agent="therapist">
-          Therapist
-          <span>Supportive mental health triage and coping.</span>
-        </button>
+  <div class="page">
+    <section class="hero">
+      <div class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="/assets/doctorai-logo.png" alt="DoctorAI" loading="lazy" />
+          <span class="pill">Structured JSON · Verified</span>
+        </div>
+        <img class="brand-mini" src="/assets/doctorai-mini.png" alt="DoctorAI mini" loading="lazy" />
       </div>
-
-      <label style="margin-top:16px;">Describe your concern</label>
-      <textarea id="question" placeholder="Example: 'Red itchy patch on left forearm for 3 days, mild burning, no fever.'"></textarea>
-
-      <div class="upload">
-        <strong>Attach image (optional)</strong>
-        <input id="image" type="file" accept="image/*" style="margin-top:8px;" />
-        <img id="preview" class="image-preview" alt="preview"/>
+      <h1>Guided GPT-style triage</h1>
+      <p>Share your note or photo. DoctorAI asks follow-up questions first, then offers a cautious plan only after you answer.</p>
+      <div class="hero-grid">
+        <div class="note-card">
+          <strong>Safety rails</strong>
+          <p>Dermatology + therapist experts, OpenEvolve verification, red-flag triage, and “plan locked until follow-ups answered.”</p>
+        </div>
+        <div class="note-card">
+          <strong>Session flavor</strong>
+          <p>Minimal chat chrome, soft gradients, and quick-reply bubbles to keep you focused on answering the right questions.</p>
+        </div>
       </div>
-
-      <div class="actions">
-        <button class="primary" id="submitBtn">Analyze</button>
-        <div class="status" id="status">Ready</div>
+      <div class="asset-strip" aria-label="DoctorAI assets">
+        <img class="asset-hero" src="/assets/doctorai-hero.png" alt="DoctorAI hero screen" loading="lazy" />
+        <img class="asset-small" src="/assets/doctorai-mini.png" alt="DoctorAI mini icon" loading="lazy" />
+        <img class="asset-small" src="/assets/doctorai-logo.png" alt="DoctorAI wordmark" loading="lazy" />
       </div>
     </section>
 
-    <section class="card result">
-      <div class="pill">Verified response</div>
-      <div id="resultBody" style="margin-top:10px; color: var(--muted);">
-        Fill in your concern to see likely differentials, follow-ups, and triage advice.
+    <section class="chat-shell">
+      <div class="chat-header">
+        <div class="agent-toggle" id="agentToggle">
+          <button class="agent-btn active" data-agent="dermatologist">Dermatologist</button>
+          <button class="agent-btn" data-agent="therapist">Therapist</button>
+        </div>
+        <div class="status" id="status" aria-live="polite">Ready · plan waits for your follow-ups</div>
       </div>
+
+      <div class="chat-log" id="chatLog" aria-live="polite">
+        <div class="bubble ai">
+          <strong>DoctorAI</strong> · I’ll keep things calm and safe. Share a short note and any image; I’ll ask 3–5 targeted follow-up questions before giving advice. Plan stays locked until you answer.
+        </div>
+      </div>
+
+      <div class="suggestions" id="suggestions">
+        <div class="chip outline" data-fill="No fever or chills.">No fever</div>
+        <div class="chip outline" data-fill="Not immunosuppressed.">Not immunosuppressed</div>
+        <div class="chip outline" data-fill="Started 3 days ago.">Started 3 days ago</div>
+        <div class="chip outline" data-fill="Pain is mild (2/10).">Pain is mild</div>
+      </div>
+
+      <div class="composer">
+        <textarea id="question" placeholder="Type your note or answer a follow-up… (Cmd/Ctrl + Enter to send)"></textarea>
+        <div class="composer-actions">
+          <label class="file-pill" for="image">
+            <span>Attach image (optional)</span>
+            <img id="preview" alt="Preview" />
+          </label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="primary" id="submitBtn">Send to DoctorAI</button>
+          </div>
+        </div>
+        <input id="image" type="file" accept="image/*" style="display:none;" />
+      </div>
+
+      <section class="summary" id="resultBody">
+        <h3>Latest reasoning</h3>
+        <p>No analysis yet. Send a message to start.</p>
+      </section>
+      <footer>DoctorAI is a triage demo. It cannot diagnose or prescribe; always follow up with a licensed clinician.</footer>
     </section>
   </div>
-
-  <footer>Accuracy first. This does not replace a licensed clinician visit. If you feel unwell, seek in-person care.</footer>
 
   <script>
     const agentToggle = document.getElementById('agentToggle');
@@ -206,13 +396,53 @@
     const preview = document.getElementById('preview');
     const submitBtn = document.getElementById('submitBtn');
     const statusEl = document.getElementById('status');
+    const chatLog = document.getElementById('chatLog');
+    const suggestions = document.getElementById('suggestions');
     const resultBody = document.getElementById('resultBody');
+
     let selectedAgent = 'dermatologist';
+    let chatHistory = [];
+    let currentFollowupKey = '';
+    let answeredFollowupKey = '';
+
+    function escapeHTML(str) {
+      return (str || '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    }
+
+    function addMessage(role, html) {
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${role}`;
+      bubble.innerHTML = html;
+      chatLog.appendChild(bubble);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function setSuggestions(list) {
+      suggestions.innerHTML = '';
+      const base = [
+        'No fever or chills.',
+        'Not immunosuppressed.',
+        'Pain is mild (2/10).',
+        'Started a few days ago.',
+      ];
+      const merged = [...new Set([...(list || []), ...base])].filter(Boolean).slice(0, 10);
+      merged.forEach((item) => {
+        const chip = document.createElement('div');
+        chip.className = 'chip outline';
+        chip.dataset.fill = item;
+        chip.textContent = item;
+        chip.addEventListener('click', () => {
+          questionInput.value = item;
+          questionInput.focus();
+        });
+        suggestions.appendChild(chip);
+      });
+    }
 
     agentToggle.addEventListener('click', (e) => {
       const btn = e.target.closest('.agent-btn');
       if (!btn) return;
-      agentToggle.querySelectorAll('.agent-btn').forEach(b => b.classList.remove('active'));
+      agentToggle.querySelectorAll('.agent-btn').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       selectedAgent = btn.dataset.agent;
     });
@@ -225,72 +455,150 @@
       reader.readAsDataURL(file);
     });
 
-    async function analyze() {
-      const question = questionInput.value.trim();
-      if (!question) {
-        statusEl.textContent = 'Add a short description first.';
-        return;
-      }
-      submitBtn.disabled = true;
-      statusEl.textContent = 'Analyzing...';
-      resultBody.textContent = '';
-
-      const form = new FormData();
-      form.append('question', question);
-      form.append('agent', selectedAgent);
-      if (imageInput.files[0]) form.append('image', imageInput.files[0]);
-
-      try {
-        const res = await fetch('/analyze', { method: 'POST', body: form });
-        const data = await res.json();
-        renderResult(data);
-        statusEl.textContent = 'Done';
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'Failed to analyze';
-        resultBody.textContent = 'Error: unable to get response.';
-      } finally {
-        submitBtn.disabled = false;
-      }
+    function serializeAssistant(v, planText) {
+      const followups = Array.isArray(v.followups) ? v.followups.join(' | ') : '';
+      return [
+        `Answer: ${v.answer || ''}`,
+        `Provisional: ${v.provisional_diagnosis || 'unclear'}`,
+        `Plan: ${planText || ''}`,
+        `Triage: ${v.triage || ''}`,
+        followups ? `Follow-ups: ${followups}` : '',
+      ].filter(Boolean).join('\n');
     }
 
-    function renderResult(payload) {
-      if (!payload || !payload.verification) {
-        resultBody.textContent = 'No response.';
-        return;
-      }
-      const v = payload.verification;
-      const followups = (v.followups || []).map(q => `<li>${q}</li>`).join('');
-      const diffs = (v.differentials || []).map(d => `<li>${d}</li>`).join('');
+    function updateResultCard(v, planText, planLocked, agentLabel) {
+      const followups = (v.followups || []).map((q) => `<li>${escapeHTML(q)}</li>`).join('');
+      const diffs = (v.differentials || []).map((d) => `<li>${escapeHTML(d)}</li>`).join('');
+      const risk = escapeHTML(v.risk_flags || '');
+      const provisional = escapeHTML(v.provisional_diagnosis || 'unclear');
+      const answer = escapeHTML(v.answer || '—');
+      const triage = escapeHTML(v.triage || '—');
+      const confidence = escapeHTML(v.confidence ?? '—');
+
       resultBody.innerHTML = `
-        <div class="pill" style="margin-bottom:10px;">${payload.title} · ${payload.agent}</div>
+        <h3>Latest reasoning · ${agentLabel}</h3>
         <div class="panel">
           <strong>Answer</strong><br/>
-          <div style="color: var(--text); margin-top:4px;">${v.answer || '—'}</div>
+          <div style="color: var(--ink); margin-top:4px;">${answer}</div>
         </div>
-        <div class="grid">
+        <div class="grid" style="margin-top:10px;">
           <div class="panel">
-            <strong>Likely diagnosis</strong><br/>
-            <div style="margin-top:4px;">${v.provisional_diagnosis || 'unclear'}</div>
+            <strong>Provisional</strong>
+            <div style="margin-top:4px;">${provisional}</div>
             <div style="margin-top:6px;"><strong>Alternatives</strong><ul>${diffs || '<li>None</li>'}</ul></div>
-            <div class="confidence">Confidence: ${v.confidence ?? '—'}</div>
+            <div class="badge-soft" style="margin-top:4px;">Confidence: ${confidence}</div>
           </div>
           <div class="panel">
             <strong>Plan</strong>
-            <div style="margin-top:4px;">${v.plan || '—'}</div>
-            <div style="margin-top:6px;"><strong>Triage</strong><br/>${v.triage || '—'}</div>
-            <div style="margin-top:6px;" class="badge-warn">${v.risk_flags || ''}</div>
+            <div style="margin-top:4px;">${planLocked ? 'Plan locked until you answer follow-up questions.' : escapeHTML(planText || '—')}</div>
+            <div style="margin-top:6px;"><strong>Triage</strong><br/>${triage}</div>
+            <div style="margin-top:6px;" class="badge-warn">${risk}</div>
           </div>
         </div>
-        <div class="panel">
+        <div class="panel" style="margin-top:10px;">
           <strong>Follow-up questions</strong>
           <ul>${followups || '<li>None</li>'}</ul>
         </div>
       `;
     }
 
+    async function analyze() {
+      const question = questionInput.value.trim();
+      if (!question) { statusEl.textContent = 'Add a short description first.'; return; }
+
+      addMessage('user', escapeHTML(question));
+      chatHistory.push({ role: 'user', content: question });
+      if (currentFollowupKey) {
+        answeredFollowupKey = currentFollowupKey;
+      }
+
+      submitBtn.disabled = true;
+      statusEl.textContent = 'Analyzing…';
+
+      const form = new FormData();
+      form.append('question', question);
+      form.append('agent', selectedAgent);
+      if (chatHistory.length > 1) {
+        form.append('history', JSON.stringify(chatHistory.slice(0, -1)));
+      }
+      if (imageInput.files[0]) form.append('image', imageInput.files[0]);
+
+      try {
+        const res = await fetch('/analyze', { method: 'POST', body: form });
+        const data = await res.json();
+        renderAssistant(data);
+        statusEl.textContent = 'Done';
+        questionInput.value = '';
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Failed to analyze';
+        addMessage('ai', '<strong>DoctorAI</strong> · Sorry, something went wrong getting your response.');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    function renderAssistant(payload) {
+      if (!payload || !payload.verification) {
+        addMessage('ai', '<strong>DoctorAI</strong> · No response from the agent.');
+        return;
+      }
+      const v = payload.verification;
+      const followups = Array.isArray(v.followups) ? v.followups.filter(Boolean) : [];
+      const followupKey = followups.length ? JSON.stringify(followups) : '';
+      const planLocked = !!(followupKey && followupKey !== answeredFollowupKey);
+      const planText = v.plan || '';
+
+      const followupHtml = followups.length
+        ? `<div class="followups">${followups.map((q) => `<div class="chip" data-fill="${escapeHTML(q)}">${escapeHTML(q)}</div>`).join('')}</div>`
+        : '';
+
+      const planLine = planLocked
+        ? '<div class="pill">Plan locked — answer follow-ups to unlock.</div>'
+        : `<div><strong>Plan</strong>: ${escapeHTML(planText || '—')}</div>`;
+
+      const messageHtml = `
+        <strong>DoctorAI</strong><br/>
+        ${escapeHTML(v.answer || '')}
+        <div class="meta">
+          <span>Provisional: ${escapeHTML(v.provisional_diagnosis || 'unclear')}</span>
+          <span>Triage: ${escapeHTML(v.triage || '—')}</span>
+          <span>Confidence: ${escapeHTML(v.confidence ?? '—')}</span>
+        </div>
+        ${planLine}
+        ${followups.length ? '<div style="margin-top:6px;"><strong>Follow-ups to answer:</strong></div>' : ''}
+        ${followupHtml}
+      `;
+      addMessage('ai', messageHtml);
+
+      const agentLabel = escapeHTML(payload.agent || selectedAgent);
+      updateResultCard(v, planText, planLocked, agentLabel);
+      setSuggestions(followups);
+
+      currentFollowupKey = followupKey;
+      if (!followupKey) {
+        answeredFollowupKey = '';
+      }
+
+      chatHistory.push({ role: 'assistant', content: serializeAssistant(v, planLocked ? 'Plan locked' : planText) });
+    }
+
     submitBtn.addEventListener('click', analyze);
-    questionInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze(); });
+    questionInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze();
+    });
+    suggestions.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip || !chip.dataset.fill) return;
+      questionInput.value = chip.dataset.fill;
+      questionInput.focus();
+    });
+    chatLog.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip || !chip.dataset.fill) return;
+      questionInput.value = chip.dataset.fill;
+      questionInput.focus();
+    });
   </script>
 </body>
 </html>

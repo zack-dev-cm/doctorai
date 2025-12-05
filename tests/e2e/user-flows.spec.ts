@@ -39,9 +39,11 @@ const therapistResponse = {
 };
 
 test.describe('DoctorAI web UI', () => {
-  test('dermatology flow with image, followups, and screenshot', async ({ page }) => {
+  test('dermatology flow with follow-up gating and screenshot', async ({ page }) => {
+    let callCount = 0;
     await page.route('**/analyze', async (route) => {
-      await page.waitForTimeout(220); // simulate small inference time
+      callCount += 1;
+      await page.waitForTimeout(callCount === 1 ? 220 : 120);
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -55,26 +57,29 @@ test.describe('DoctorAI web UI', () => {
 
     const status = page.locator('#status');
     const result = page.locator('#resultBody');
-
     const t0 = Date.now();
+
     await page.click('#submitBtn');
-    await expect(status).toHaveText(/Analyzing|Done/);
-    await expect(result).toContainText('eczema');
+    await expect(status).toContainText(/Analyzing|Done/);
+    await expect(result).toContainText('Plan locked', { timeout: 3000 });
+
+    const followupChip = page.locator('#chatLog .chip').first();
+    await followupChip.click();
+    await page.click('#submitBtn');
+
+    await expect(result).toContainText('eczema', { timeout: 5000 });
     await expect(result).toContainText('hydrocortisone');
-    const followups = result
-      .locator('div.panel')
-      .filter({ hasText: 'Follow-up questions' })
-      .locator('li');
+    const followups = result.locator('div.panel').filter({ hasText: 'Follow-up questions' }).locator('li');
     expect(await followups.count()).toBeGreaterThan(2);
     const latencyMs = Date.now() - t0;
-    expect(latencyMs).toBeLessThan(2000);
+    expect(latencyMs).toBeLessThan(4000);
 
     const shotPath = test.info().outputPath('derm-flow.png');
     await page.screenshot({ path: shotPath, fullPage: true, animations: 'disabled' });
     expect(fs.existsSync(shotPath)).toBeTruthy();
   });
 
-  test('therapist flow resists script injection and shows followups', async ({ page }) => {
+  test('therapist flow resists script injection and keeps followups prominent', async ({ page }) => {
     page.on('dialog', async (dialog) => {
       await dialog.dismiss();
       throw new Error(`Unexpected dialog: ${dialog.message()}`);
@@ -94,14 +99,15 @@ test.describe('DoctorAI web UI', () => {
     await page.click('#submitBtn');
 
     const result = page.locator('#resultBody');
+    await expect(result).toContainText('Plan locked', { timeout: 3000 });
     await expect(result).toContainText('Box breathing', { timeout: 5000 });
-    const followupItems = result
-      .locator('div.panel')
-      .filter({ hasText: 'Follow-up questions' })
-      .locator('li');
+    const followupItems = result.locator('div.panel').filter({ hasText: 'Follow-up questions' }).locator('li');
     const texts = await followupItems.allTextContents();
     expect(texts.join(' ')).toContain('Safety check');
     expect(texts.join(' ')).toContain('Sleep quality');
+
+    const lastUserBubble = page.locator('.bubble.user').last();
+    await expect(lastUserBubble).toContainText('<script>alert(1)</script>');
   });
 
   test('status label updates under slower responses', async ({ page }) => {
@@ -119,7 +125,7 @@ test.describe('DoctorAI web UI', () => {
     await page.click('#submitBtn');
 
     const status = page.locator('#status');
-    await expect(status).toHaveText(/Analyzing/);
-    await expect(status).toHaveText(/Done/, { timeout: 5000 });
+    await expect(status).toContainText(/Analyzing/);
+    await expect(status).toContainText(/Done/, { timeout: 5000 });
   });
 });

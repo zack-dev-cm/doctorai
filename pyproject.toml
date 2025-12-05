@@ -32,6 +32,5 @@ include = [
     "scripts/**",
     "README.md",
     "PRD.md",
-    "AGENTS.md",
     "Dockerfile",
 ]

@@ -27,7 +27,7 @@ DEFAULT_AGENT = settings.default_agent or "dermatologist"
 
 
 def format_reply(payload: Dict) -> str:
-    v = payload.get("verification") or {}
+    v = payload.get("verification") or payload.get("verified") or {}
     followups = v.get("followups") or []
     diffs = v.get("differentials") or []
     parts = [
