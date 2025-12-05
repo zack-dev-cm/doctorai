@@ -28,6 +28,15 @@ Dermatology-first AI triage with an optional therapist mode, image-aware analysi
 - Run locally: `TELEGRAM_BOT_TOKEN=xxx WEB_APP_URL=http://localhost:8000 python -m app.bot`
 - Bot commands: `/start` (sends Web App button), `/mode dermatologist|therapist` switches agent. Send photo+caption or text to get a verified answer.
 
+## E2E testing (Playwright)
+- Install deps: `npm install && npx playwright install --with-deps`.
+- Run the app (`uvicorn app.main:app --host 0.0.0.0 --port 8000`), then `PLAYWRIGHT_BASE_URL=http://localhost:8000 npm run test:e2e`.
+- Tests live in `tests/e2e/user-flows.spec.ts`: they mock `/analyze`, simulate dermatologist/therapist flows with image upload, verify followups/triage rendering, check status changes under slower responses, and capture UI screenshots to the test output directory.
+
+## Logging/ops
+- API logs show structured events: `analyze_request` (agent, has_image, chars) and `analyze_response` (agent, provisional, confidence).
+- To tail Cloud Run logs: `gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=doctorai" --project $GCP_PROJECT --limit=50`
+
 ## Deployment (Cloud Run)
 Based on the `bvis` Cloud Run pattern:
 1) Build and push:

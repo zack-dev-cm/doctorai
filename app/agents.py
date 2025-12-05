@@ -3,12 +3,15 @@ from __future__ import annotations
 import base64
 import json
 from dataclasses import dataclass
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from openai import AsyncOpenAI
 
 from .config import settings
+
+logger = logging.getLogger("doctorai.agent")
 
 
 BASE_RESPONSE_SCHEMA = {
@@ -142,11 +145,22 @@ async def run_agent(
                 messages.append({"role": item["role"], "content": item["content"]})
     messages.append({"role": "user", "content": user_parts})
 
+    logger.info(
+        "agent_request",
+        extra={
+            "agent": profile.key,
+            "model": settings.openai_model,
+            "verifier_model": settings.openai_verifier_model,
+            "has_image": bool(image_bytes),
+            "question_chars": len(question),
+        },
+    )
+
     analysis = await client.chat.completions.create(
         model=settings.openai_model,
         messages=messages,
         temperature=0.4,
-        max_tokens=800,
+        max_completion_tokens=800,
         reasoning_effort=settings.reasoning_effort,
     )
     analysis_content = analysis.choices[0].message.content or "{}"
@@ -171,7 +185,7 @@ async def run_agent(
         model=settings.openai_verifier_model,
         messages=verifier_messages,
         temperature=0.2,
-        max_tokens=600,
+        max_completion_tokens=600,
         reasoning_effort=settings.reasoning_effort,
     )
     verified_content = verification.choices[0].message.content or "{}"

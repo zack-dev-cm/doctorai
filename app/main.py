@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import logging
 
 from .agents import run_agent
 from .config import settings
@@ -29,6 +30,8 @@ app.add_middleware(
 static_dir = Path(__file__).parent.parent / "web"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+logger = logging.getLogger("doctorai.api")
+logging.basicConfig(level=logging.INFO)
 
 class AnalysisResponse(BaseModel):
     agent: str
@@ -63,6 +66,15 @@ async def analyze(
     if not question or not question.strip():
         raise HTTPException(status_code=400, detail="Question is required.")
 
+    logger.info(
+        "analyze_request",
+        extra={
+            "agent": agent or settings.default_agent,
+            "has_image": bool(image),
+            "question_chars": len(question or ""),
+        },
+    )
+
     image_bytes = await image.read() if image else None
     hist_payload: List[dict] | None = None
     if history:
@@ -87,6 +99,14 @@ async def analyze(
         result=result["analysis_raw"],
         verification=result["verified"],
         meta=result["meta"],
+    )
+    logger.info(
+        "analyze_response",
+        extra={
+            "agent": result["agent"],
+            "provisional": result["verified"].get("provisional_diagnosis"),
+            "confidence": result["verified"].get("confidence"),
+        },
     )
     return JSONResponse(content=payload.model_dump())
 

@@ -1,0 +1,13 @@
+{
+  "name": "doctorai-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "1.49.1"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:update": "playwright test --update-snapshots"
+  }
+}
