@@ -1,0 +1,25 @@
+[project]
+name = "doctorai"
+version = "0.1.0"
+description = "Dermatology-focused Doctor AI with optional therapist mode and image analysis."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "DoctorAI Team" }]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-multipart>=0.0.9",
+    "openai>=1.51.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.4.0",
+    "httpx>=0.27.0",
+    "jinja2>=3.1.4",
+    "python-telegram-bot>=21.4",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6.0", "pytest>=8.3.0", "anyio>=4.4.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
