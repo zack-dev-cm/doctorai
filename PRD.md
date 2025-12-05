@@ -23,7 +23,7 @@ Deliver a dermatology-first AI assistant with therapist fallback that ingests te
 
 ## Requirements
 - **Accuracy/Safety**: default dermatologist prompt; verification must downgrade risky recs.
-- **Latency**: target <8s end-to-end for single image/text on 4o-mini.
+- **Latency**: target <8s end-to-end for single image/text on gpt-5.1-2025-11-13.
 - **Internationalization**: English default; agents respond in user language if requested.
 - **Observability**: health endpoint; logs through Cloud Run.
 - **Configurability**: models set via env; easy swap to Gemini when available.
@@ -51,4 +51,4 @@ Deliver a dermatology-first AI assistant with therapist fallback that ingests te
 ## Next steps
 - Add Telegram bot surface and widget cards.
 - Add test harness that scores JSON shape and red-flag coverage.
-- Add model fallback to `gpt-4o`/Gemini for robust multimodal analysis.
+- Add model fallback to `gpt-5.1`/Gemini for robust multimodal analysis.

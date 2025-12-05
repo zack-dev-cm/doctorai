@@ -3,7 +3,7 @@
 Dermatology-first AI triage with an optional therapist mode, image-aware analysis, and verification guardrails.
 
 ## Quickstart
-- Requirements: Python 3.10+, `OPENAI_API_KEY` in env (reads from `.env` if present). Optional: `GOOGLE_API_KEY` for future Gemini routing. Default models: `gpt-5.1` for both analysis and verification (reasoning_effort `medium`).
+- Requirements: Python 3.10+, `OPENAI_API_KEY` in env (reads from `.env` if present). Optional: `GOOGLE_API_KEY` for future Gemini routing. Default models: `gpt-5.1-2025-11-13` for both analysis and verification (reasoning_effort `medium`).
 - Install deps: `pip install .`
 - Run API + UI: `uvicorn app.main:app --host 0.0.0.0 --port 8000`
 - Open `http://localhost:8000` for the mini web app. `POST /analyze` accepts `multipart/form-data` (`question`, optional `agent`, optional `image`).

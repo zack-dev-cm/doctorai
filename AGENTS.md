@@ -44,7 +44,7 @@ Return corrected JSON only. If content is unsafe or missing, produce conservativ
 
 ## Tuning levers
 - Temperature: `analysis=0.4`, `verification=0.2`.
-- Models: defaults `gpt-4o-mini`; can upgrade `settings.openai_model` / `settings.openai_verifier_model`.
+- Models: defaults `gpt-5.1-2025-11-13`; override via `settings.openai_model` / `settings.openai_verifier_model` if needed.
 - Confidence calibration: instruct verifier to cap confidence unless strong evidence.
 
 ## Future work
